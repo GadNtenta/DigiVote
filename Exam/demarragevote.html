@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>DigiVote - Enrôlement</title>
+    <style>
+      body {
+          background-color: #ECEFFF;
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          height: 100vh;
+          overflow: hidden;
+      }
+      header {
+          width: 100%;
+          background-color: #007BFF;
+          color: #fff;
+          text-align: left;
+          position: absolute;
+          top: 0;
+      }
+      header h1 {
+          margin: 1% 1% 1% 1%;
+          font-size: 23px;
+      }
+      .container {
+          display: flex;
+          width: 100%;
+          height: 100%;
+          margin-top: 50px; /* Adjusté pour l'en-tête */
+      }
+      .left-section {
+          background-color: #AAD3FF; /* Bleu clair */
+          width: 30%;
+          height: 70%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 18px;
+          box-sizing: border-box;
+          margin-left: 150px;
+          border-bottom-left-radius: 80px;
+          border-bottom-right-radius: 80px;
+          box-shadow: -18px 10px 20px rgba(0, 0, 149, 0.8); /
+      }
+      .image-container img {
+          max-width: 80%;
+          height: auto;
+          margin-left: 15%;
+      }
+      .right-section, #resultsContainer {
+          background-color: #ECEFFF; /* Blanc */
+          width: 66.67%;
+          display: flex;
+          flex-direction: column;
+          margin-top: -8%;
+          padding: 150px;
+          box-sizing: border-box;
+      }
+      .tabcontent {
+          background-color: #fff;
+          padding: 18px;
+          border-radius: 8px;
+          box-shadow: 0 0 50px rgba(0, 0, 0, 0.2);
+          text-align: left;
+          width: 400px;
+          height: 450px;
+          position: relative;
+      }
+      h1 {
+          font-size: 24px;
+          margin-bottom: 20px;
+          margin-left: 10%;
+      }
+      label {
+          font-size: 13.5px;
+      }
+      button {
+          background-color: #007BFF;
+          color: #fff;
+          border: none;
+          padding: 10px 20px;
+          margin-top: 15px;
+          cursor: pointer;
+          border-radius: 20px;
+          font-size: 13.5px;
+          width: calc(85% - 16px);
+          height: 32px;
+          margin-left: 10%;
+      }
+      button:hover {
+          background-color: #0056b3;
+      }
+      button:disabled,
+      button.disabled {
+          background-color: #ccc;
+          cursor: default;
+      }
+      label {
+          display: block;
+          margin-top: 10px;
+          margin-left: 10%;
+      }
+      input[type="text"],
+      input[type="date"],
+      input[type="time"] { padding: 8px;
+          width: calc(80% - 16px);
+          margin-top: 3px;
+          margin-bottom: 3px;
+          border: 1.9px solid #cce5ff;
+          border-radius: 20px;
+          margin-left: 10%;
+          height: 8px;
+      }
+      #chrono {
+          margin-top: 20px;
+          font-size: 24px;
+          text-align: center;
+          background-color: #f0f0f5;
+          padding: 10px;
+          border-radius: 5px;
+      }
+      #finVote {
+          margin-top: 10px;
+          text-align: center;
+          font-size: 18px;
+      }
+      #resultsContainer {
+          width: 100%;
+          height: 100%;
+          padding: 18px;
+          box-sizing: border-box;
+      }
+      .additional-info {
+          margin-top: 20px;
+          font-size: 14px;
+          text-align: left;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      let candidateNumber = 1;
+      let chronoInterval;
+      let startTime;
+
+      function openTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+          tabcontent[i].style.display = "none";
+          tabcontent[i].classList.remove("active");
+        }
+        tablinks = document.getElementsByClassName("tablink");
+        for (i = 0; i < tablinks.length; i++) {
+          tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        document.getElementById(tabName).classList.add("active");
+        evt.currentTarget.className += " active";
+      }
+
+      function demarrerVote() {
+        const dateDebut = document.getElementById("dateDebut").value;
+        const heureDebut = document.getElementById("heureDebut").value;
+
+        if (dateDebut && heureDebut) {
+          const debutVote = new Date(`${dateDebut}T${heureDebut}`);
+          const maintenant = new Date();
+
+          if (debutVote > maintenant) {
+            alert("La date et l'heure de début doivent être dans le passé.");
+            return;
+          }
+
+          startTime = new Date();
+          chronoInterval = setInterval(updateChrono, 1000);
+        } else {
+          alert("Veuillez remplir la date et l'heure de début.");
+        }
+      }
+
+      function updateChrono() {
+        const now = new Date();
+        const diff = now - startTime;
+        const heures = String(Math.floor(diff / 3600000)).padStart(2, "0");
+        const minutes = String(Math.floor((diff % 3600000) / 60000)).padStart(
+          2,
+          "0"
+        );
+        const secondes = String(Math.floor((diff % 60000) / 1000)).padStart(
+          2,
+          "0"
+        );
+        document.getElementById(
+          "chrono"
+        ).textContent = `${heures}:${minutes}:${secondes}`;
+      }
+
+      function arreterVote() {
+        clearInterval(chronoInterval);
+        const finVote = new Date();
+        document.getElementById("chrono").textContent = "00:00:00";
+        document.getElementById(
+          "finVote"
+        ).textContent = `Vote terminé à : ${finVote.toLocaleString()}`;
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        document
+          .getElementById("formulaireCandidat")
+          .addEventListener("submit", function (event) {
+            event.preventDefault();
+            document.getElementById("numCandidat").value = candidateNumber++;
+            alert("Candidat enregistré avec succès!");
+            this.reset();
+            document.getElementById("numCandidat").value = candidateNumber;
+          });
+        document.getElementById("numCandidat").value = candidateNumber;
+      });
+
+      function loadResults() {
+        fetch("vote.php?action=results")
+          .then((response) => response.json())
+          .then((data) => {
+            var resultsChart = document
+              .getElementById("resultsChart")
+              .getContext("2d");
+
+            var options = Object.keys(data.votes);
+            var votes = Object.values(data.votes);
+            var totalVotes = data.totalVotes;
+            var totalVoters = data.totalVoters;
+
+            var percentages = [];
+            if (totalVotes > 0) {
+              percentages = votes.map((v) =>
+                ((v / totalVotes) * 100).toFixed(2)
+              );
+            } else {
+              percentages = Array(options.length).fill("0");
+            }
+
+            var chartData = {
+              labels: options.map(
+                (option, index) => `${option} : ${percentages[index]}%`
+              ),
+              datasets: [
+                {
+                  data: votes,
+                  backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
+                  hoverOffset: 30,
+                  borderWidth: 0,
+                },
+              ],
+            };
+
+            if (window.myPieChart) {
+              window.myPieChart.destroy();
+            }
+
+            window.myPieChart = new Chart(resultsChart, {
+              type: "pie",
+              data: chartData,
+              options: {
+                responsive: true,
+                plugins: {
+                  legend: {
+                    position: "top",
+                  },
+                  tooltip: {
+                    callbacks: {
+                      label: function (tooltipItem) {
+                        return `${tooltipItem.label} : ${tooltipItem.raw} vote(s)`;
+                      },
+                    },
+                  },
+                },
+              },
+            });
+
+            var resultsContainer = document.getElementById("resultsContainer");
+            var infoDiv = document.createElement("div");
+            infoDiv.classList.add("additional-info");
+            infoDiv.innerHTML = `
+                        <h3>Informations supplémentaires</h3>
+                        Nombre total de votes : ${totalVotes}</br>
+                        Nombre total d'électeurs : ${totalVoters}</br>
+                        Nombre de votes restants : ${totalVoters - totalVotes}
+                    `;
+
+            var oldInfo = resultsContainer.querySelector(".additional-info");
+            if (oldInfo) {
+              resultsContainer.removeChild(oldInfo);
+            }
+
+            resultsContainer.appendChild(infoDiv);
+          });
+      }
+
+      loadResults();
+    </script>
+  </head>
+  <body>
+    <header>
+      <h1>DigiVote</h1>
+    </header>
+    <div class="container">
+      <div class="left-section">
+        <div class="image-container">
+          <img src="vote1.png" alt="Vote" />
+        </div>
+      </div>
+      <div class="right-section">
+        <div id="demarrageVote" class="tabcontent">
+          <h2>Démarrage du Vote</h2>
+          <form id="formulaireVote">
+            <label for="dateDebut">Date de Début</label>
+            <input type="date" id="dateDebut" name="dateDebut" required />
+
+            <label for="heureDebut">Heure de Début</label>
+            <input type="time" id="heureDebut" name="heureDebut" required />
+
+            <button type="button" onclick="demarrerVote()">
+              Démarrer le Vote
+            </button>
+            <button type="button" onclick="arreterVote()">
+              Arrêter le Vote
+            </button>
+          </form>
+          <div id="chrono">00:00:00</div>
+          <div id="finVote"></div>
+        </div>
+      </div>
+      <div id="resultsContainer">
+        <canvas id="resultsChart"></canvas>
+        <div class="additional-info"></div>
+      </div>
+    </div>
+  </body>
+</html>

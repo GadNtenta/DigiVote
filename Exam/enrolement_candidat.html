@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enrôlement des Candidats</title>
+    <link rel="stylesheet" href="enrolement_candidat.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="image-section">
+        <img src="vote.png" alt="Vote Image" />
+      </div>
+      <div class="form-section">
+        <h2>Enrôlement Candidats</h2>
+        <form id="formulaireCandidat">
+          <label for="nom">Nom:</label>
+          <input type="text" id="nom" name="nom" required />
+
+          <label for="postnom">Postnom:</label>
+          <input type="text" id="postnom" name="postnom" required />
+
+          <label for="prenom">Prénom:</label>
+          <input type="text" id="prenom" name="prenom" required />
+
+          <label for="poste">Poste:</label>
+          <select id="poste" name="poste" required>
+            <option value="Présidence">Présidence</option>
+            <option value="Vice-Présidence">Vice-Présidence</option>
+            <option value="Secrétaire">Secrétaire</option>
+            <option value="Trésorier">Trésorier</option>
+          </select>
+
+          <label for="identite">Numéro d’identité:</label>
+          <input type="text" id="identite" name="identite" required />
+
+          <button type="button" onclick="genererNumero()">Générer</button>
+          <button type="submit">Enregistrer</button>
+        </form>
+      </div>
+    </div>
+    <script src="enrolement_candidat.js"></script>
+  </body>
+</html>
