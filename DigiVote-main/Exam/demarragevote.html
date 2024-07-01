@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <title>DigiVote - Enrôlement</title>
+    <style>
+        body {
+          background-color: #ECEFFF;
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          height: 100vh;
+          overflow: hidden;
+      }
+      header {
+        width: 100%;
+        background-color: #007BFF;
+        color: #fff;
+        text-align: left;
+        position: absolute;
+        justify-content: center;
+        box-sizing: border-box;
+        padding: 10px;
+      }
+      header h1 {
+        margin: 0;
+        font-size: 22px;
+      }
+      .container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            margin-top: 50px; /* Adjusté pour l'en-tête */
+        }
+        .left-section {
+            background-color: #AAD3FF; /* Bleu clair */
+            width: 30%; 
+            height: 70%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            box-sizing: border-box;
+            margin-left: 150px;
+            border-bottom-left-radius: 80px;
+            border-bottom-right-radius: 80px;
+            box-shadow: -18px 10px 20px rgba(0, 0, 149, 0.8); /
+        }
+        .image-container img {
+            max-width: 80%;
+            height: auto;
+            margin-left: 15%;
+        }
+      .right-section {
+          background-color: #ECEFFF; /* Blanc */
+          width: 66.67%;
+          display: flex;
+          flex-direction: column;
+          margin-top: -8%;
+          padding: 150px;
+          box-sizing: border-box;
+      }
+      .tabcontent {
+          background-color: #fff;
+          padding: 18px;
+          border-radius: 8px;
+          box-shadow: 0 0 50px rgba(0, 0, 0, 0.2);
+          text-align: left;
+          width: 400px;
+          height: 470px;
+          position: relative;
+      }
+      h1 {
+          font-size: 24px;
+          margin-bottom: 20px;
+          margin-left: 10%;
+      }
+      label {
+          font-size: 13.5px;
+      }
+      button {
+          background-color: #007BFF;
+          color: #fff;
+          border: none;
+          padding: 10px 20px;
+          margin-top: 15px;
+          cursor: pointer;
+          border-radius: 20px;
+          font-size: 13.5px;
+          width: calc(85% - 16px);
+          height: 32px;
+          margin-left: 10%;
+      }
+      button:hover {
+          background-color: #0056b3;
+      }
+      button:disabled,
+      button.disabled {
+          background-color: #ccc;
+          cursor: default;
+      }
+      label {
+          display: block;
+          margin-top: 10px;
+          margin-left: 10%;
+      }
+      input[type="text"],
+      input[type="date"],
+      input[type="time"] { padding: 8px;
+          width: calc(80% - 16px);
+          margin-top: 3px;
+          margin-bottom: 3px;
+          border: 1.9px solid #cce5ff;
+          border-radius: 20px;
+          margin-left: 10%;
+          height: 8px;
+      }
+      #chrono {
+          margin-top: 20px;
+          font-size: 24px;
+          text-align: center;
+          background-color: #f0f0f5;
+          padding: 10px;
+          border-radius: 5px;
+      }
+      #finVote {
+          margin-top: 10px;
+          text-align: center;
+          font-size: 18px;
+      }
+      #resultsContainer {
+          width: 100%;
+          height: 100%;
+          padding: 18px;
+          box-sizing: border-box;
+      }
+      .additional-info {
+          margin-top: 20px;
+          font-size: 14px;
+          text-align: left;
+      }
+      .message-box {
+          margin-top: 20px;
+          font-size: 16px;
+          color: red;
+          text-align: center;
+      }
+      .success-message {
+        color: green;
+    }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let chronoInterval;
+        let countdownInterval;
+        let startTime;
+
+        function demarrerVote() {
+            const dateDebut = document.getElementById("dateDebut").value;
+            const heureDebut = document.getElementById("heureDebut").value;
+            const heureFin = document.getElementById("heureFin").value;
+            const messageBox = document.getElementById("messageBox");
+            messageBox.textContent = "";
+
+            if (dateDebut && heureDebut && heureFin) {
+                const debutVote = new Date(`${dateDebut}T${heureDebut}`);
+                const finVote = new Date(`${dateDebut}T${heureFin}`);
+                const maintenant = new Date();
+
+                if (debutVote < maintenant) {
+                    messageBox.textContent = "Heure du début dépassée.";
+                    setTimeout(() => { messageBox.textContent = ""; }, 2000);
+                    return;
+                }
+
+                if (finVote <= debutVote) {
+                    messageBox.textContent = "L'heure de fin doit être après l'heure de début.";
+                    setTimeout(() => { messageBox.textContent = ""; }, 2000);
+                    return;
+                }
+
+                countdownInterval = setInterval(() => {
+                    const now = new Date();
+                    const timeLeft = debutVote - now;
+
+                    if (timeLeft <= 0) {
+                        clearInterval(countdownInterval);
+                        document.getElementById("messageBox").textContent = "Début du vote.";
+                        document.getElementById("messageBox").classList.add("success-message");
+                        setTimeout(() => { messageBox.textContent = ""; }, 2000);
+                        startVote();
+                        return;
+                    }
+
+                    const heures = String(Math.floor(timeLeft / 3600000)).padStart(2, "0");
+                    const minutes = String(Math.floor((timeLeft % 3600000) / 60000)).padStart(2, "0");
+                    const secondes = String(Math.floor((timeLeft % 60000) / 1000)).padStart(2, "0");
+
+                    messageBox.textContent = `Le vote débute dans : ${heures}:${minutes}:${secondes}`;
+                }, 1000);
+            } else {
+                messageBox.textContent = "Veuillez remplir la date, l'heure de début et de fin du vote.";
+                setTimeout(() => { messageBox.textContent = ""; }, 2000);
+            }
+        }
+
+        function updateChrono() {
+            const now = new Date();
+            const diff = now - startTime;
+            const heures = String(Math.floor(diff / 3600000)).padStart(2, "0");
+            const minutes = String(Math.floor((diff % 3600000) / 60000)).padStart(2, "0");
+            const secondes = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
+
+            document.getElementById("chrono").textContent = `${heures}:${minutes}:${secondes}`;
+
+            // Vérifie si l'heure actuelle a dépassé l'heure de fin spécifiée
+            const heureFin = document.getElementById("heureFin").value;
+            if (heureFin && now.getHours() >= parseInt(heureFin.split(":")[0])) {
+                arreterVote();
+            }
+        }
+
+        function arreterVote() {
+            clearInterval(chronoInterval);
+            clearInterval(countdownInterval);
+            const finVote = new Date();
+            const diff = finVote - startTime;
+            const heures = String(Math.floor(diff / 3600000)).padStart(2, "0");
+            const minutes = String(Math.floor((diff % 3600000) / 60000)).padStart(2, "0");
+            const secondes = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
+
+            document.getElementById("chrono").textContent = `${heures}:${minutes}:${secondes}`;
+            document.getElementById("finVote").innerHTML = `Vote terminé à : ${finVote.toLocaleString()}<br>Durée du vote : ${heures}:${minutes}:${secondes}`;
+            document.getElementById("arreterVoteBtn").disabled = true;
+            document.getElementById("demarrerVoteBtn").disabled = true;
+        }
+
+        function startVote() {
+            startTime = new Date();
+            chronoInterval = setInterval(updateChrono, 1000);
+            document.getElementById("demarrerVoteBtn").disabled = true;
+            document.getElementById("arreterVoteBtn").disabled = false;
+        }
+
+        function setMinDateTime() {
+            const dateInput = document.getElementById("dateDebut");
+            const timeInput = document.getElementById("heureDebut");
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+
+            dateInput.min = `${year}-${month}-${day}`;
+            timeInput.min = `${hours}:${            minutes}`;
+        }
+
+        window.addEventListener('load', setMinDateTime);
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("arreterVoteBtn").disabled = true;
+            document.getElementById("demarrerVoteBtn").disabled = false;
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <h1>DigiVote</h1>
+    </header>
+    <div class="container">
+        <div class="left-section">
+            <div class="image-container">
+                <img src="vote1.png" alt="Vote" />
+            </div>
+        </div>
+        <div class="right-section">
+            <div id="demarrageVote" class="tabcontent">
+                <h2 style="margin-left: 10%;">Démarrage du Vote</h2>
+                <form id="formulaireVote">
+                    <label for="dateDebut">Date de Début</label>
+                    <input type="date" id="dateDebut" name="dateDebut" required />        
+                    <label for="heureDebut">Heure de Début</label>
+                    <input type="time" id="heureDebut" name="heureDebut" required />
+                    <label for="heureFin">Heure de Fin</label>
+                    <input type="time" id="heureFin" name="heureFin" required />
+                    <button type="button" id="demarrerVoteBtn" onclick="demarrerVote()">
+                        Démarrer le Vote
+                    </button>
+                    <button type="button" id="arreterVoteBtn" onclick="arreterVote()">
+                        Arrêter le Vote
+                    </button>
+                </form>
+                <div id="chrono">00:00:00</div>
+                <div id="finVote"></div>
+                <div id="messageBox" class="message-box"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

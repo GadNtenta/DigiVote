@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>DigiVote - Enrôlement</title>
+    <style>
+        body {
+            background-color: #ECEFFF;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        header {
+            width: 100%;
+            background-color: #007BFF;
+            color: #fff;
+            text-align: left;
+            position: fixed;
+            top: 0;
+            box-sizing: border-box;
+            padding: 10px;
+            z-index: 1000;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 22px;
+        }
+        .container {
+            display: flex;
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            margin-top: 40px; /* Ajusté pour l'en-tête */
+        }
+        .left-section {
+            background-color: #AAD3FF; /* Bleu clair */
+            width: 30%;
+            height: 70%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            box-sizing: border-box;
+            margin-left: 150px;
+            border-bottom-left-radius: 80px;
+            border-bottom-right-radius: 80px;
+            box-shadow: -18px 10px 20px rgba(0, 0, 149, 0.8);
+        }
+        .image-container img {
+            max-width: 80%;
+            height: auto;
+            margin-left: 15%;
+        }
+        .right-section {
+            background-color: #ECEFFF; /* Blanc */
+            width: 70%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 50px;
+            box-sizing: border-box;
+            position: relative;
+        }
+        .right-content {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-top: 43%;
+        }
+        .right-content h1 {
+            margin-left: 10%;
+            width: 100%;
+        }
+        .enrolment-container {
+            background-color: #fff;
+            padding: 18px;
+            border-radius: 8px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.2);
+            text-align: left;
+            width: 560px;
+            height: 460px; /* Ajusté pour s'adapter au nouveau cadre */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative; /* Ajouté pour les positions absolues des messages */
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        label {
+            font-size: 13.5px;
+        }
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 15px;
+            cursor: pointer;
+            border-radius: 20px;
+            font-size: 13.5px;
+            width: calc(127% - 16px);
+            justify-content: center;
+            align-items: center;
+            height: 32px;
+            margin-left: 10%;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled,
+        button.disabled {
+            background-color: #ccc;
+            cursor: default;
+        }
+        input[type="text"] {
+            padding: 8px;
+            width: calc(120% - 14px);
+            height: 8px;
+            margin-top: 3px;
+            margin-bottom: 3px;
+            border: 1.9px solid #cce5ff;
+            border-radius: 20px;
+            margin-left: 10%;
+        }
+        .uniqueCode {
+            display: flex;
+            align-items: center;
+            margin-left: -5px;
+            width: 133%; /* Ajouté pour s'assurer que le bouton est aligné correctement */
+        }
+        #uniqueCode {
+            padding-left: 8px;
+            margin-top: 3px;
+            margin-bottom: 3px;
+            border: 1.9px solid #cce5ff;
+            border-radius: 20px;
+            width: 203%;
+        }
+        #generateButton {
+            margin-left: 10px;
+            margin-top: -1px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12.5px;
+        }
+        #generateButton:hover {
+            background-color: #218838;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            margin-left: 10%;
+        }
+        .photo-container {
+            width: 120px;
+            height: 140px;
+            border: 2px dashed #cce5ff;
+            border-radius: 10px;
+            position: absolute;
+            top: 105px; /* Ajusté pour positionner au-dessus du formulaire */
+            right: 35px; /* Ajusté pour positionner au-dessus du formulaire */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .photo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+        .photo-container input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .photo-container .add-icon, .photo-container .remove-icon {
+            font-size: 50px;
+            color: #007BFF;
+            cursor: pointer;
+        }
+        .photo-container .remove-icon {
+            font-size: 20px;
+            color: red;
+            cursor: pointer;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            display: none;
+        }
+        .form-content {
+            margin-top: -50%;
+        }
+        .form-content h1 {
+            margin-right: 20px;
+        }
+        .message-box {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            width: calc(80% - 16px);
+            margin-left: 13%;
+            box-sizing: border-box;
+            text-align: center;
+            font-size: 13px;
+            position: absolute; /* Position absolue pour éviter le déplacement */
+            bottom: 12px; /* Ajusté pour placer en bas */
+            left: 28%;
+            transform: translateX(-50%);
+        }
+        .error-box {
+            background-color: #f8d7da;
+            color: #721c24;
+            margin-left: 13%;
+            border: 1px solid #f5c6cb;
+            text-align: center;
+            font-size: 13px;
+            position: absolute; /* Position absolue pour éviter le déplacement */
+            bottom: 12px; /* Ajusté pour placer en bas */
+            left: 38%;
+            transform: translateX(-50%);
+        }
+    </style>
+     <script>
+        function generateUniqueCode() {
+            const uniqueCode = 'ID-' + Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+            document.getElementById('uniqueCode').value = uniqueCode;
+        }
+
+        function displaySelectedPhoto(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.querySelector('.photo-container img');
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                    document.querySelector('.photo-container .add-icon').style.display = 'none';
+                    document.querySelector('.photo-container .remove-icon').style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removePhoto() {
+            const img = document.querySelector('.photo-container img');
+            img.src = '';
+            img.style.display = 'none';
+            document.querySelector('.photo-container .add-icon').style.display = 'block';
+            document.querySelector('.photo-container .remove-icon').style.display = 'none';
+            document.getElementById('photoInput').value = ''; // Clear the input value
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('enrolmentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const uniqueCode = document.getElementById('uniqueCode').value;
+                const messageBox = document.getElementById('messageBox');
+                const errorBox = document.getElementById('errorBox');
+                
+                // Clear any previous messages
+                messageBox.textContent = '';
+                errorBox.textContent = '';
+
+                if (!uniqueCode) {
+                    errorBox.textContent = "Vous devez générer un numéro d'identité avant de vous enregistrer.";
+                    errorBox.style.display = 'block';
+                    setTimeout(() => {
+                        errorBox.style.display = 'none';
+                    }, 2000);
+                    return;
+                }
+
+                const formData = new FormData(this);
+
+                fetch('enrolement.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(data => {
+                    if (data.includes('success')) {
+                        messageBox.textContent = 'Enregistrement réussi. Redirection ...';
+                        messageBox.style.display = 'block';
+                        setTimeout(() => {
+                            window.location.href = 'transition1.php';
+                        }, 2000);
+                    } else {
+                        errorBox.textContent = data;
+                        errorBox.style.display = 'block';
+                        setTimeout(() => {
+                            errorBox.style.display = 'none';
+                        }, 2000);
+                    }
+                })
+                .catch(error => {
+                    errorBox.textContent = 'Erreur : ' + error;
+                    errorBox.style.display = 'block';
+                    setTimeout(() => {
+                        errorBox.style.display = 'none';
+                    }, 2000);
+                });
+            });
+
+            document.getElementById('photoInput').addEventListener('change', displaySelectedPhoto);
+            document.querySelector('.photo-container .remove-icon').addEventListener('click', removePhoto);
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <h1>DigiVote</h1>
+    </header>
+    <div class="container">
+        <div class="left-section">
+            <div class="image-container">
+                <img src="vote1.png" alt="Vote">
+            </div>
+        </div>
+        <div class="right-section">
+            <form id="enrolmentForm" class="enrolment-container" method="post" enctype="multipart/form-data">
+                <fieldset class="photo-container">
+                    <legend style="font-size: 13px; font-weight: bold; text-align: center;">Photo d'identité</legend>
+                    <img src="" alt="Photo">
+                    <input type="file" id="photoInput" name="photo" accept="image/*" required>
+                    <div class="add-icon">+</div>
+                    <div class="remove-icon">×</div>
+                </fieldset>
+                <div class="right-content">
+                    <div class="form-content">
+                        <h1>Enrôlement </h1>
+                        <label for="firstName">Prénom </label>
+                        <input type="text" id="firstName" name="firstName" required>
+                        <label for="lastName">Nom </label>
+                        <input type="text" id="lastName" name="lastName" required>
+                        <label for="postnom">Postnom </label>
+                        <input type="text" id="postnom" name="postnom" required>
+                        <label for="Adress">Adresse </label>
+                        <input type="text" id="Adress" name="Adress" required>
+                        <label for="uniqueCode">Numéro d'identité </label>
+                        <div class="uniqueCode">
+                            <input type="text" id="uniqueCode" name="uniqueCode" readonly>
+                            <button type="button" id="generateButton" onclick="generateUniqueCode()">Générer</button>
+                        </div>
+                        <button type="submit">Enregistrer</button>
+                        <div id="messageBox" class="message-box" style="display:none;"></div>
+                        <div id="errorBox" class="message-box error-box" style="display:none;"></div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
